@@ -1,66 +1,97 @@
-// pages/dealPic/uploadPic/uploadPic.js
 Page({
-
-  /**
-   * 页面的初始数据
-   */
   data: {
-
+    target: '',
+    accessToken: '',
+    picPath: '',
+    imgUrl: ''
   },
-
-  /**
-   * 生命周期函数--监听页面加载
-   */
-  onLoad: function (options) {
-
+  onLoad() {
+    const eventChannel = this.getOpenerEventChannel()
+    const that = this
+    eventChannel.on('sendTarget', (data) => {
+      that.setData({
+        target: data.data
+      })
+    })
   },
-
-  /**
-   * 生命周期函数--监听页面初次渲染完成
-   */
-  onReady: function () {
-
+  onShow() {
+    this.getAccessToken()
   },
-
-  /**
-   * 生命周期函数--监听页面显示
-   */
-  onShow: function () {
-
+  toUploadPic() {
+    const that = this
+    wx.chooseImage({
+      count: 1,
+      sizeType: ['original', 'compressed'],
+      sourceType: ['album', 'camera'],
+      success (res) {
+        const tempFilePaths = res.tempFilePaths
+        that.setData({imgUrl: tempFilePaths[0]})
+        // 图片转base64
+        const imgbase = wx.getFileSystemManager().readFileSync(tempFilePaths[0], "base64")
+        that.getDealPic(imgbase)
+      }
+    })
   },
-
-  /**
-   * 生命周期函数--监听页面隐藏
-   */
-  onHide: function () {
-
+  getAccessToken() {
+    const that = this
+    wx.request({
+      method: 'POST',
+      url: 'https://aip.baidubce.com/oauth/2.0/token',
+      data: {
+        'grant_type': 'client_credentials',
+        'client_id': 'zy5ZotHwsDGgASYajVy4Pab9',
+        'client_secret': 'pA1jytE8CZKEpourZKrMwxOgNq88bYSj'
+      },
+      header: {
+        'content-type': 'application/x-www-form-urlencoded'
+      },
+      success(res) {
+        that.setData({
+          accessToken: res.data.access_token
+        })
+      }
+    })
   },
-
-  /**
-   * 生命周期函数--监听页面卸载
-   */
-  onUnload: function () {
-
+  getDealPic(imgbase) {
+    wx.showLoading({title: '处理中', mask: true})
+    const that = this
+    wx.request({
+      method: 'POST',
+      url: 'https://aip.baidubce.com/rest/2.0/image-classify/v1/body_seg',
+      data : {
+        access_token: that.data.accessToken,
+        image: imgbase,
+        type: 'foreground'
+      },
+      header: {
+        'content-type': 'application/x-www-form-urlencoded'
+      },
+      success(res) {
+        wx.hideLoading()
+        if (res.data.person_num) {
+          const imgData = `data:image/jpeg;base64,${res.data.foreground}`
+          that.toDownloadPic(imgData)
+        } else {
+          wx.showToast({
+            title: '处理失败，请重试~'
+          })
+        }
+      }
+    })
   },
-
-  /**
-   * 页面相关事件处理函数--监听用户下拉动作
-   */
-  onPullDownRefresh: function () {
-
-  },
-
-  /**
-   * 页面上拉触底事件的处理函数
-   */
-  onReachBottom: function () {
-
-  },
-
-  /**
-   * 用户点击右上角分享
-   */
-  onShareAppMessage: function () {
-
+  toDownloadPic(picPath) {
+    const {width, height} = this.data.target
+    const that = this
+    wx.navigateTo({
+      url: '../downloadPic/downloadPic',
+      success(res) {
+        res.eventChannel.emit('sendInfo', { 
+          picPath,
+          imgUrl: that.data.imgUrl,
+          width,
+          height
+        })
+      }
+    })
   }
 })

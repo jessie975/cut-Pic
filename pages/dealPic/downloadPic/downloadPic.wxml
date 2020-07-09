@@ -1,0 +1,13 @@
+<view class="container">
+  <view class="pic" style="width: {{width}}rpx; height: {{height}}rpx; background-color: {{bgColor}}">
+    <image src="{{picPath}}" style="width: {{width}}rpx; height: {{height}}rpx;"/>
+  </view>
+  <view class="chooseColor">
+    <view class="title">选择底色</view>
+    <view class="red" bindtap="chooseColor" data-color="red"></view>
+    <view class="blue" bindtap="chooseColor" data-color="blue"></view>
+    <view class="white" bindtap="chooseColor" data-color="white"></view>
+  </view>
+  <button bindtap="saveImg">保存图片到本地</button>
+  <canvas type="2d" id="canvas" style="width: {{width / 2}}px; height: {{height / 2}}px"></canvas>
+</view>

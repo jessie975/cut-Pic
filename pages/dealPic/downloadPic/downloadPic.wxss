@@ -1,0 +1,26 @@
+.pic {
+  position: relative;
+}
+.pic > image {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+.chooseColor {
+  display: flex;
+}
+.red, .blue, .white {
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: 50%;
+  border: 1px solid #ccc;
+}
+.red {
+  background-color: #ff0000;
+}
+.blue {
+  background-color: #438edb;
+}
+.white {
+  background-color: #fff;
+}

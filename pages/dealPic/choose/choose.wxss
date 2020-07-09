@@ -1,1 +1,8 @@
-/* pages/dealPic/choose/choose.wxss */
+.choose .item {
+  width: 200rpx;
+  height: 100rpx;
+  line-height: 100rpx;
+  border: 1px solid #000;
+  text-align: center;
+  margin: 40rpx auto;
+}

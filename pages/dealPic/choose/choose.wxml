@@ -1,2 +1,8 @@
-<!--pages/dealPic/choose/choose.wxml-->
-<text>pages/dealPic/choose/choose.wxml</text>
+<view class="choose">
+  <view class="title">报名照片制作</view>
+  <view class="item-container">
+    <view class="item" wx:for="{{chooseList}}" wx:key="{{item.title}}" bindtap="toUploadPage" data-item="{{item}}">
+      {{item.title}}
+    </view>
+  </view>
+</view>

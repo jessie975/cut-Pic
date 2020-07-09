@@ -1,10 +1,9 @@
 {
   "pages": [
-    "pages/index/index",
-    "pages/dealPic/list",
+    "pages/dealPic/index",
     "pages/dealPic/choose/choose",
     "pages/dealPic/uploadPic/uploadPic",
-    "pages/dealPic/result/result"
+    "pages/dealPic/downloadPic/downloadPic"
   ],
   "window": {
     "backgroundTextStyle": "light",

@@ -1,2 +1,20 @@
-<!--pages/dealPic/uploadPic/uploadPic.wxml-->
-<text>pages/dealPic/uploadPic/uploadPic.wxml</text>
+<view class="upload">
+  <view class="title">证件照规格要求</view>
+  <view class="content">
+    <view><span>纸质照片尺寸：</span><span>{{target.size}}</span></view>
+    <!-- TODO:每种照片的要求，贤哥说给 -->
+    <view><span>照片格式：</span><span>jpg</span></view>
+    <view><span>背景色：</span><span>白</span></view>
+    <view>正脸（人脸姿态自然）</view>
+    <view>人脸居中</view>
+    <view>双眼水平</view>
+    <view>中性表情</view>
+    <view>肩膀等高</view>
+    <view>服装突出</view>
+    <view>不模糊</view>
+    <view>无噪声</view>
+  </view>
+  <button class="upload" bindtap="toUploadPic">去上传或拍照</button>
+  <image src="{{picPath}}" style="width: {{target.width}}rpx; height: {{target.height}}rpx;"/>
+  <!-- TODO:拍照提示图片 -->
+</view>
