@@ -1,22 +1,26 @@
+import { base64src } from '../../../utils/base64ToSrc'
+
 Page({
   data: {
     width: '',
     height: '',
     picPath: '',
     bgColor: '#438edb',
-    imgUrl: ''
+    isOpacity: true
   },
   onLoad() {
     const that = this
     const eventChannel = this.getOpenerEventChannel()
     eventChannel.on('sendInfo', (data) => {
-      that.setData({
-        width: data.width,
-        height: data.height,
-        picPath: data.picPath,
-        imgUrl: data.imgUrl
+      base64src(data.picPath, res => {
+        that.setData({
+          width: data.width,
+          height: data.height,
+          picPath: res
+        })
       })
     })
+    this.drawCanvas()
   },
   chooseColor(type) {
     const targetColor = type.currentTarget.dataset.color
@@ -28,30 +32,42 @@ Page({
     this.setData({
       bgColor: colorObj[targetColor]
     })
+    this.drawCanvas()
   },
-  drawImg() {
+  drawCanvas() {
     const that = this
-    const {bgColor, imgUrl} = that.data
-    const query = wx.createSelectorQuery()
-    query.select('#canvas')
-      .fields({ node: true, size: true })
-      .exec((res) => {
-        const canvas = res[0].node
-        const ctx = canvas.getContext('2d')
-
-        const dpr = wx.getSystemInfoSync().pixelRatio
-        canvas.width = res[0].width * dpr
-        canvas.height = res[0].height * dpr
-        ctx.scale(dpr, dpr)
-        // 绘制底色
-        ctx.fillStyle = bgColor
-        ctx.fillRect(0, 0, canvas.width, canvas.height)
-        // TODO:绘制人像
-        
-      })
+    const {bgColor, picPath, width, height} = that.data
+    const ctx = wx.createCanvasContext('canvas')
+    // 绘制底色
+    ctx.setFillStyle(bgColor)
+    ctx.fillRect(0, 0, width, height)
+    // 绘制人像
+    ctx.drawImage(picPath, 0, 0, width / 2, height / 2)
+    ctx.draw()
   },
-  saveImg() {
-    // 保存图片到本地思路：先将带有背景色的图片绘制到canvas上，然后通过wx.canvasToTempFilePath将canvas转成图片，最后通过wx.saveImageToPhotosAlbum保存到本地
-    this.drawImg()
+  downLoadImg() {
+    const that = this
+    const {width, height} = that.data
+    wx.canvasToTempFilePath({
+      x: 0,
+      y: 0,
+      width: width / 2,
+      height: height / 2,
+      destWidth: width,  //2倍关系
+      destHeight: height, //2倍关系
+      canvasId: 'canvas',
+      success: function (res) {
+        console.log(res.tempFilePath);
+        wx.saveImageToPhotosAlbum({
+          filePath: res.tempFilePath,
+          success(res) {
+            console.log(res);
+          }
+        })
+      },
+      fail: function (res) {
+        console.log(res)
+      }
+    })
   }
 })
